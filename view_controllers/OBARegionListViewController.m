@@ -373,7 +373,7 @@ typedef enum {
 
 - (UITableViewCell*) regionsCellForRowAtIndexPath:(NSIndexPath *)indexPath tableView:(UITableView*)tableView {
     OBARegionV2 *region = nil;
-    UITableViewCell * cell = [UITableViewCell getOrCreateCellForTableView:tableView];
+    UITableViewCell * cell = [UITableViewCell getOrCreateCellForTableView:tableView cellId:@"RegionsCell"];
 
     switch ([self sectionTypeForSection:indexPath.section]) {
         case OBASectionTypeNearbyRegions:
@@ -430,7 +430,7 @@ typedef enum {
 }
 
 - (UITableViewCell*) experimentalRegionCellForRowAtIndexPath:(NSIndexPath *)indexPath tableView:(UITableView*)tableView {
-    UITableViewCell *cell = [UITableViewCell getOrCreateCellForTableView:tableView];
+    UITableViewCell *cell = [UITableViewCell getOrCreateCellForTableView:tableView cellId:@"ExperimentalRegionCell"];
     [_toggleSwitch addTarget:self
                      action:@selector(didSwitchStateOfToggle:)
            forControlEvents:UIControlEventValueChanged];
@@ -446,7 +446,7 @@ typedef enum {
 }
 
 - (UITableViewCell*) customAPICellForRowAtIndexPath:(NSIndexPath *)indexPath tableView:(UITableView*)tableView {
-    UITableViewCell *cell = [UITableViewCell getOrCreateCellForTableView:tableView];
+    UITableViewCell *cell = [UITableViewCell getOrCreateCellForTableView:tableView cellId:@"CustomAPICell"];
     cell.accessoryType = UITableViewCellAccessoryDisclosureIndicator;
     cell.selectionStyle = UITableViewCellSelectionStyleBlue;
     cell.textLabel.textColor = [UIColor blackColor];
@@ -506,15 +506,19 @@ typedef enum {
     if (_appDelegate.modelDao.region.experimental){
         
         //Change to automatic region if available
-        [_appDelegate.modelDao writeSetRegionAutomatically:YES];
-        [_appDelegate.modelDao setOBARegion:self.nearbyRegion];
+        if (self.nearbyRegion) {
+            [_appDelegate.modelDao writeSetRegionAutomatically:YES];
+            [_appDelegate.modelDao setOBARegion:self.nearbyRegion];
+        }
         //Otherwise, set region to first in list
-        if(_appDelegate.modelDao.region.experimental)
-        {
-            if(![self isLoading] && _regions.count > 0)
-            {
-                [_appDelegate.modelDao setOBARegion:[_regions objectAtIndex:0]];
-            }
+        else if(![self isLoading] && _regions.count > 0) {
+            [_appDelegate.modelDao setOBARegion:[_regions objectAtIndex:0]];
+        }
+        //Set region to nil if list is empty
+        else if (![self isLoading]) {
+            UIAlertView *noAvailableRegionsAlert = [[UIAlertView alloc] initWithTitle:@"No Regions Found" message:@"No available regions were found, recheck your connection and try again" delegate:nil cancelButtonTitle:@"OK" otherButtonTitles:nil];
+            [_appDelegate.modelDao setOBARegion:nil];
+            [noAvailableRegionsAlert show];
         }
     }
 
