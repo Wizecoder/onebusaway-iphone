@@ -25,19 +25,6 @@
     return self;
 }
 
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    
-    [self updateBackButton];
-}
-
-- (void)updateBackButton {
-    UIBarButtonItem *backButton = [[UIBarButtonItem alloc] initWithTitle:@"Back" style:UIBarButtonItemStylePlain target:self action:@selector(handleBack)];
-    
-    self.navigationItem.hidesBackButton = YES;
-    self.navigationItem.leftBarButtonItem = backButton;
-}
-
 - (void)loadURL {
     [self.webView loadRequest:[NSURLRequest requestWithURL:self.url]];
 }
@@ -45,14 +32,6 @@
 - (void)loadView {
     self.view = self.webView;
     [self loadURL];
-}
-
-- (void)handleBack {
-    if ([self.webView canGoBack]) {
-        [self.webView goBack];
-    } else {
-        [self.navigationController popViewControllerAnimated:YES];
-    }
 }
 
 - (UIWebView*)webView {
