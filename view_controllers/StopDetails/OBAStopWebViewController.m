@@ -36,6 +36,7 @@
     
     self.navigationItem.hidesBackButton = YES;
     self.navigationItem.leftBarButtonItem = backButton;
+    self.navigationItem.rightBarButtonItem = [[UIBarButtonItem alloc] initWithTitle:@"Done" style:UIBarButtonItemStylePlain target:self action:@selector(simpleBack)];
 }
 
 - (void)loadURL {
@@ -45,6 +46,10 @@
 - (void)loadView {
     self.view = self.webView;
     [self loadURL];
+}
+
+- (void)simpleBack {
+    [self.navigationController popViewControllerAnimated:YES];
 }
 
 - (void)handleBack {
